@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.techlab.articulo.model.Articulo;
+import com.techlab.articulo.model.Categoria;
+
 
 
 
@@ -18,6 +20,10 @@ public class App {
 
         ArrayList<Articulo> articulos = new ArrayList<>();
 
+        ArrayList<Categoria> categorias = new ArrayList<>();
+
+        precargarCategorias(categorias);
+
 
         int opcion;
 
@@ -26,22 +32,23 @@ public class App {
         do{
            
             System.out.println("\n==========================================");
-            System.out.println("   SISTEMA BÁSICO DE ARTÍCULOS - CLASE 1");
-            System.out.println("==========================================");
+            System.out.println("   SISTEMA BÁSICO DE ARTÍCULOS - CLASE 3 (categoria objeto)");
+            System.out.println("===========================================================");
             System.out.println("1 - Ingresar artículo");
             System.out.println("2 - Listar artículos");
             System.out.println("3 - Consultar un artículo");
             System.out.println("4 - Modificar un artículo");
             System.out.println("5 - Eliminar un artículo");
+            System.out.println("6 - Listar categorias precargadas");
             System.out.println("0 - Salir");
-            System.out.println("==========================================");
+            System.out.println("===========================================================");
 
             opcion = leerEntero(scanner, "Ingrese una opción: ");
 
 
             switch (opcion) {
                 case 1:
-                    ingresarArticulo(scanner, articulos);
+                    ingresarArticulo(scanner, articulos, categorias);
                     break;
                 case 2:
                     listarArticulos(articulos);
@@ -50,11 +57,13 @@ public class App {
                     consultarArticulo(scanner, articulos);
                     break;
                 case 4:
-                    modificarArticulo(scanner, articulos);
+                    modificarArticulo(scanner, articulos, categorias);
                     break;
                 case 5:
                     eliminarArticulo(scanner, articulos);
                     break;
+                case 6:
+                    listarCategorias(categorias);
                 case 0:
                     System.out.println("\nSaliendo del sistema. ¡Hasta luego!");
                     break;
@@ -67,7 +76,14 @@ public class App {
 
     }
 
-    public static void ingresarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
+    public static void precargarCategorias(ArrayList<Categoria> categorias) {
+        categorias.add(new Categoria(1, "Electrónica", "Productos tecnológicos y electrónicos"));
+        categorias.add(new Categoria(2, "Periféricos", "Accesorios para computadora"));
+        categorias.add(new Categoria(3, "Alimentos", "Productos alimenticios"));
+        categorias.add(new Categoria(4, "Limpieza", "Artículos de limpieza del hogar"));
+    }
+
+    public static void ingresarArticulo(Scanner scanner, ArrayList<Articulo> articulos, ArrayList<Categoria> categorias) {
 
         System.out.println("\n--- INGRESAR ARTÍCULO ---");
 
@@ -79,9 +95,14 @@ public class App {
         }
        String nombre = leerTextoNoVacio(scanner, "Ingrese el nombre del artículo: ");
        double precio = leerDoubleNoNegativo(scanner, "Ingrese el precio del artículo: ");
+
+       listarCategorias(categorias);
+
+
+       Categoria categoriaElegida = pedirCategoriaExistente(scanner, categorias);
        
 
-       Articulo articulo = new Articulo(codigo, nombre, precio);
+       Articulo articulo = new Articulo(codigo, nombre, precio, categoriaElegida);
 
        articulos.add(articulo);
 
@@ -128,7 +149,7 @@ public class App {
 
     }
 
-    public static void modificarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
+    public static void modificarArticulo(Scanner scanner, ArrayList<Articulo> articulos, ArrayList<Categoria> categorias) {
 
         System.out.println("\n--- MODIFICAR ARTÍCULO ---");
 
@@ -159,6 +180,17 @@ public class App {
         System.out.println("Artículo modificado correctamente.");
     }
 
+     public static Categoria buscarCategoriaPorCodigo(ArrayList<Categoria> categorias, int codigo) {
+
+        for (Categoria categoria : categorias) {
+            if (categoria.getCodigo() == codigo) {
+                return categoria;
+            }
+        }
+
+        return null;
+    }
+
 
     public static void eliminarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
 
@@ -184,6 +216,28 @@ public class App {
         System.out.println("Artículo eliminado correctamente.");
     }
 
+    public static void listarCategorias(ArrayList<Categoria> categorias) {
+        System.out.println("\n--- CATEGORÍAS DISPONIBLES ---");
+
+        for (Categoria categoria : categorias) {
+            System.out.println(categoria);
+        }
+    }
+
+    public static Categoria pedirCategoriaExistente(Scanner scanner, ArrayList<Categoria> categorias) {
+
+        while (true) {
+            int codigoCategoria = leerEntero(scanner, "Ingrese el código de la categoría: ");
+
+            Categoria categoria = buscarCategoriaPorCodigo(categorias, codigoCategoria);
+
+            if (categoria != null) {
+                return categoria;
+            }
+
+            System.out.println("Error: la categoría no existe.");
+        }
+    }
 
 
     

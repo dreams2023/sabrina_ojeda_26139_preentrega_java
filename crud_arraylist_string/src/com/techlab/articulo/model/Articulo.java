@@ -8,12 +8,15 @@ public class Articulo {
 
     private double precio;
 
+    private Categoria categoria;
 
 
-     public Articulo(int codigo, String nombre, double precio) {
+
+     public Articulo(int codigo, String nombre, double precio, Categoria categoria) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
+        this.categoria = categoria;
     }
 
 
@@ -48,12 +51,23 @@ public class Articulo {
     }
 
 
-    @Override
+    public Categoria getCategoria(){
+        return categoria;
+    }
+
+
+    public void setCategoria(Categoria categoria){
+        this.categoria = categoria;
+    }
+
+
+   @Override
     public String toString() {
         return "Artículo {" +
                 "código=" + codigo +
                 ", nombre='" + nombre + '\'' +
                 ", precio=" + precio +
+                ", categoría='" + categoria.getNombre() + '\'' +
                 '}';
     }
     
