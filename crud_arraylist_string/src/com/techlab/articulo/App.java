@@ -9,13 +9,14 @@ import com.techlab.articulo.model.Articulo;
 
 
 
+
 public class App {
 
     public static void main(String[] args) {
         
         Scanner scanner = new Scanner(System.in);
 
-        ArrayList<String> articulos = new ArrayList<>();
+        ArrayList<Articulo> articulos = new ArrayList<>();
 
 
         int opcion;
@@ -66,24 +67,29 @@ public class App {
 
     }
 
-    public static void ingresarArticulo(Scanner s, ArrayList<String> listaArticulos) {
+    public static void ingresarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
 
         System.out.println("\n--- INGRESAR ARTÍCULO ---");
 
-        String descripcion = leerTextoNoVacio(s, "Ingrese la descripción del artículo: ");
+        int codigo = leerEntero(scanner, "Ingrese el codigo del artículo: ");
 
-        if (existeArticulo(listaArticulos, descripcion)) {
-            System.out.println("Error: ese artículo ya existe en el sistema.");
+       if (buscarArticuloPorCodigo(articulos, codigo) != null) {
+            System.out.println("Error: ya existe un artículo con ese código.");
             return;
         }
+       String nombre = leerTextoNoVacio(scanner, "Ingrese el nombre del artículo: ");
+       double precio = leerDoubleNoNegativo(scanner, "Ingrese el precio del artículo: ");
+       
 
-        listaArticulos.add(descripcion);
+       Articulo articulo = new Articulo(codigo, nombre, precio);
 
-        System.out.println("Artículo ingresado correctamente.");
+       articulos.add(articulo);
+
+       System.out.println("Articulo ingresado correctamente.");
     }
 
 
-    public static void listarArticulos( ArrayList<String> articulos){
+    public static void listarArticulos( ArrayList<Articulo> articulos){
 
         System.out.println("\n--- LISTADO DE ARTÍCULOS ---");
 
@@ -93,16 +99,14 @@ public class App {
         }
 
 
-         for (int i = 0; i < articulos.size(); i++) {
-            System.out.println((i + 1) + " - " + articulos.get(i));
+        for (Articulo articulo : articulos) {
+            System.out.println(articulo);
         }
-
-
 
     }
 
 
-    public static void consultarArticulo(Scanner scanner, ArrayList<String> articulos ){
+    public static void consultarArticulo(Scanner scanner, ArrayList<Articulo> articulos ){
 
         System.out.println("\n--- CONSULTAR ARTÍCULO ---");
 
@@ -111,20 +115,20 @@ public class App {
             return;
         }
 
-        String descripcionBuscada = leerTextoNoVacio(scanner, "Ingrese la descripción del artículo a consultar: ");
+        int codigo = leerEntero(scanner, "Ingrese la descripción del artículo a consultar: ");
 
-        int posicion = buscarPosicionArticulo(articulos, descripcionBuscada);
+        Articulo articulo = buscarArticuloPorCodigo(articulos, codigo);
 
-        if (posicion == -1) {
+        if (articulo == null) {
             System.out.println("El artículo no existe.");
         } else {
-            System.out.println("Artículo encontrado en la posición: " + (posicion + 1));
-            System.out.println("Descripción: " + articulos.get(posicion));
+            System.out.println("Artículo encontrado:");
+            System.out.println(articulo);
         }
 
     }
 
-    public static void modificarArticulo(Scanner scanner, ArrayList<String> articulos) {
+    public static void modificarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
 
         System.out.println("\n--- MODIFICAR ARTÍCULO ---");
 
@@ -133,30 +137,30 @@ public class App {
             return;
         }
 
-        String descripcionActual = leerTextoNoVacio(scanner, "Ingrese la descripción del artículo a modificar: ");
+        int codigo = leerEntero(scanner, "Ingrese el código del artículo a modificar: ");
 
-        int posicion = buscarPosicionArticulo(articulos, descripcionActual);
+        Articulo articulo = buscarArticuloPorCodigo(articulos, codigo);
 
-        if (posicion == -1) {
+        if (articulo == null) {
             System.out.println("El artículo no existe.");
             return;
         }
 
-        String nuevaDescripcion = leerTextoNoVacio(scanner, "Ingrese la nueva descripción: ");
+        String nuevoNombre = leerTextoNoVacio(scanner, "Ingrese el nuevo nombre del artículo: ");
+        double nuevoPrecio = leerDoubleNoNegativo(scanner, "Ingrese el nuevo precio del artículo: ");
+        
 
-     if (existeArticulo(articulos, nuevaDescripcion) &&
-                !articulos.get(posicion).equalsIgnoreCase(nuevaDescripcion)) {
-            System.out.println("Error: ya existe otro artículo con esa descripción.");
-            return;
-        }
 
-         articulos.set(posicion, nuevaDescripcion);
+        articulo.setNombre(nuevoNombre);
+        articulo.setPrecio(nuevoPrecio);
+
+     
 
         System.out.println("Artículo modificado correctamente.");
     }
 
 
-    public static void eliminarArticulo(Scanner scanner, ArrayList<String> articulos) {
+    public static void eliminarArticulo(Scanner scanner, ArrayList<Articulo> articulos) {
 
         System.out.println("\n--- ELIMINAR ARTÍCULO ---");
 
@@ -165,49 +169,36 @@ public class App {
             return;
         }
 
-        String descripcionAEliminar = leerTextoNoVacio(scanner, "Ingrese la descripción del artículo a eliminar: ");
+        int codigo = leerEntero(scanner, "Ingrese el código del artículo a eliminar: ");
 
-        int posicion = buscarPosicionArticulo(articulos, descripcionAEliminar);
+        Articulo articulo = buscarArticuloPorCodigo(articulos, codigo);
 
-        if (posicion == -1) {
+        if (articulo == null) {
             System.out.println("El artículo no existe.");
             return;
         }
 
-        // Eliminamos el elemento según su posición.
-        articulos.remove(posicion);
+        
+        articulos.remove(articulo);
 
         System.out.println("Artículo eliminado correctamente.");
     }
 
 
 
-    public static boolean existeArticulo(ArrayList<String> articulos, String descripcion){
+    
 
 
-         for (String articulo : articulos) {
-            if (articulo.equalsIgnoreCase(descripcion.trim())) {
-                return true;
+    public static Articulo buscarArticuloPorCodigo(ArrayList<Articulo> articulos, int codigo) {
+
+        for (Articulo articulo : articulos) {
+            if (articulo.getCodigo() == codigo) {
+                return articulo;
             }
         }
 
-        return false;
-
+        return null;
     }
-
-
-    public static int buscarPosicionArticulo(ArrayList<String> articulos, String descripcion) {
-
-        for (int i = 0; i < articulos.size(); i++) {
-            if (articulos.get(i).equalsIgnoreCase(descripcion.trim())) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-
 
     public static int leerEntero(Scanner scanner, String mensaje){
 
@@ -224,6 +215,26 @@ public class App {
     }
 
 
+    public static double leerDoubleNoNegativo(Scanner scanner, String mensaje) {
+
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                double valor = Double.parseDouble(scanner.nextLine());
+
+                if (valor < 0) {
+                    System.out.println("Error: el precio no puede ser negativo.");
+                    continue;
+                }
+
+                return valor;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: debe ingresar un número decimal válido.");
+            }
+        }
+    }
+
+
     public static String leerTextoNoVacio(Scanner scanner, String mensaje) {
 
         while (true) {
@@ -233,11 +244,10 @@ public class App {
             if (!texto.trim().isEmpty()) {
                 return texto.trim();
 
+            }
+
+          System.out.println("Error: el texto no puede estar vacío.");
         }
 
-        System.out.println("Error: el texto no puede estar vacío.");
     }
-
-}
-
 }
